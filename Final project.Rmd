@@ -8,6 +8,23 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## Data Selection
+This is how we selected our data and ensured it would be small enough to go on github.
+```{r eval = FALSE, echo = FALSE}
+HousingOriginal <- read.csv("properties_2017.csv")
+smallData = HousingOriginal %>% select(yearbuilt, bathroomcnt, architecturalstyletypeid, regionidcity, fireplacecnt,
+                                       basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft,
+                                       latitude, longitude, taxvaluedollarcnt)
+smallData = smallData %>% filter(bathroomcnt > 0, taxvaluedollarcnt > 999)
+samllSampledData = sample_n(smallData, 1000000)
+write.csv(samllSampledData,"C:\\Users\\black\\Desktop\\School\\DS 202\\DS202-final-project\\properties_small_2017.csv", row.names = FALSE)
+```
+
+## Instantiation
+```{r}
+library(tidyverse)
+HousingOriginal <- read.csv("properties_small_2017.csv")
+```
 >__Plan__
 
 Requirement: Group work: at least 10 variables, 100 observations and 6 out of the 8 Candidate plots.
