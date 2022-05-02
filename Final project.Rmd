@@ -22,8 +22,10 @@ write.csv(samllSampledData,"C:\\Users\\black\\Desktop\\School\\DS 202\\DS202-fin
 ```
 
 ## Instantiation
-```{r}
+```{r echo = FALSE}
 library(tidyverse)
+library(lubridate)
+library(maps)
 HousingOriginal <- read.csv("properties_small_2017.csv")
 ```
 >__Plan__
@@ -88,4 +90,59 @@ III. Investigate relationship
 IV. Digging deeper with some fancy stuff ( if have time)
 - Training some models
 
+## Actual Report
 
+Real estate and Housing prices are always in great flux. We have decided to use the 2017 Zillow competition data to try and predict prices for real estate using a variety of factors. The response variable we are using will be taxvaluedollarcnt. A continuous quantitative variable. 
+The response variables are:
+Quantitative: 
+yearbuilt, discrete
+bathroomcnt, discrete with halves
+fireplacecnt, discrete
+basementsqft, continuous
+finishedsquarefeet15, continuous
+landtaxvaluedollarcnt, continuous
+garagetotalsqft, continuous
+
+Categorical:
+architecturalstyletypeid, nominal
+regionidcity, nominal
+typeconstructiontypeid, nominal
+
+Response Variable:
+The response variable is our first investigation, we will be attempting to see if it is bell shaped and has a normal distribution. We see the data is quite spread out, with a standard deviation of $614,453 and a mean of $441,428. There are 103,994 observations of houses less than $100,000 and 443 observations of houses more than $10,000,000. So our data is incredibly spread out. 
+```{r}
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt)) + geom_histogram()
+HousingOriginal$taxvaluedollarcnt %>% summary() 
+mean(HousingOriginal$taxvaluedollarcnt)
+sd(HousingOriginal$taxvaluedollarcnt)
+HousingOriginal[HousingOriginal$taxvaluedollarcnt > 10000000, ] %>% count()
+HousingOriginal[HousingOriginal$taxvaluedollarcnt < 100000, ] %>% count()
+```
+Next, to get a general sense of what data we are talking about, we will map out the data on a plot. Zillow multiplied all longitudes and latitudes by 1*10e^6 so we accounted for this in the code.
+```{r}
+states <- map_data("state")
+filter(states, region == "california") %>% ggplot(aes(x = long, y = lat)) +
+  geom_path(aes(group = group)) +
+  geom_point(data=HousingOriginal,aes(x=longitude/1000000, y=latitude/1000000, color="#E69F00")) +
+  ggtitle("All data mapped against California")
+```
+So now we know for certain that we are deal with southern California homes. Everything from mansions to shacks. Before we begin modelling, there are a couple of preemptive questions I would like to ask:
+
+### We each should do one of each of these
++ Numeric vs numberic ( using scatterplots) 
++ Numeric vs categorical ( using side by side boxplots or facetted plot)
++ Categorical vs categorical ( using barchart with facetting or other aesthetic)
+
+### Craig's Questions:
+Variables: yearBuilt, bathroom ct, architectureStyleTypeId, regionIDCity, fireplacecnt
+1. What is the relationship between bathroomcnt and fireplacecnt 
+2. What is the relationship between yearbuilt and architectureStyleTypeId
+3. What is the relationship between regionIDCity and architectureStyleTypeId
+
+In modern architecture, fire places are not very common place, but do exist especially in nicer homes. In older architecture, they are more common for both stylisitic and actual warmth purposes.
+```{}
+HousingOriginal %>% ggplot(aes(x=bathrromcnt, y=fireplacecnt))
+```
+
+
+### Ngoc's Questions:
