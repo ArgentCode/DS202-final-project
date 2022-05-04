@@ -5,15 +5,15 @@ date: "4/29/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r, knitr, setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Data Selection
 This is how we selected our data and ensured it would be small enough to go on github.
-```{r eval = FALSE}
+```{r, DataSelection, eval = FALSE, echo = FALSE}
 HousingOriginal <- read.csv("properties_2017.csv")
-smallData = HousingOriginal %>% select(yearbuilt, bathroomcnt, architecturalstyletypeid, regionidcity, fireplacecnt,
+smallData = HousingOriginal %>% select(yearbuilt, bathroomcnt, airconditioningtypeid, regionidcity, fireplacecnt,
                                        basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft,
                                        latitude, longitude, taxvaluedollarcnt)
 smallData = smallData %>% filter(bathroomcnt > 0, taxvaluedollarcnt > 999)
@@ -22,27 +22,12 @@ write.csv(samllSampledData,"C:\\Users\\black\\Desktop\\School\\DS 202\\DS202-fin
 ```
 
 ## Instantiation
-```{r echo = FALSE}
+```{r, Instantiation}
 library(tidyverse)
 library(lubridate)
 library(maps)
 HousingOriginal <- read.csv("properties_small_2017.csv")
 ```
->__Plan__
-
-Requirement: Group work: at least 10 variables, 100 observations and 6 out of the 8 Candidate plots.
-
-  I. Choose the data
-
-  2. Brain storming 
-  - questions/ expectation might have on the data ( list all expectations)
-
-  3. Submission for the plan( homework 11)
-  
-  - the names of all team members that worked on the final project;
-  - an overview of the data set you are working with for the final project;
-  - a discussion of cleaning steps that are necessary to get the data into the right shape.
-  
 ## Proposal (Homework 11)
 
 Data was acquired from a 2017 kaggle competition, [Zillow Prize: Zillow’s Home Value Prediction (Zestimate)](https://www.kaggle.com/competitions/zillow-prize-1). We specifically used the properties_2017.csv
@@ -104,13 +89,23 @@ landtaxvaluedollarcnt, continuous
 garagetotalsqft, continuous
 
 Categorical:
-architecturalstyletypeid, nominal
+airconditioningtypeid, nominal
 regionidcity, nominal
 typeconstructiontypeid, nominal
 
+## Clean and visualize
+
+First, how many NA's do we have.
+```{r}
+colSums(is.na(HousingOriginal))
+```
+The variables airconditioningtypeid, fireplacecnt, basementsqft, finishedsquarefeet15, typeconstructiontypeid, garagetotalsqft all have a large majority of null values. fireplacecnt uses null to indicate that there is no fireplace. However, airconditioningtypeid has a category for no air conditioner so there is no obvious explanation for the lack of values. We still have ~300,000 observations so analysis should be able to continue. 
+
+### Justin-todo Explain your NA's, and do any base level analysis you need
+
 Response Variable:
 The response variable is our first investigation, we will be attempting to see if it is bell shaped and has a normal distribution. We see the data is quite spread out, with a standard deviation of $614,453 and a mean of $441,428. There are 103,994 observations of houses less than $100,000 and 443 observations of houses more than $10,000,000. So our data is incredibly spread out. 
-```{r}
+```{r, ResponseVariable}
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt)) + geom_histogram()
 HousingOriginal$taxvaluedollarcnt %>% summary() 
 mean(HousingOriginal$taxvaluedollarcnt)
@@ -118,15 +113,35 @@ sd(HousingOriginal$taxvaluedollarcnt)
 HousingOriginal[HousingOriginal$taxvaluedollarcnt > 10000000, ] %>% count()
 HousingOriginal[HousingOriginal$taxvaluedollarcnt < 100000, ] %>% count()
 ```
+
+Quantitative Explanatory Variables:
+```{r, QuantitativeExplanatoryVariables}
+HousingOriginal %>% ggplot(aes(x=yearbuilt)) + geom_boxplot()
+HousingOriginal %>% ggplot(aes(x=bathroomcnt)) + geom_histogram()
+HousingOriginal %>% ggplot(aes(x=fireplacecnt)) + geom_histogram()
+HousingOriginal %>% ggplot(aes(x=basementsqft)) + geom_boxplot()
+HousingOriginal %>% ggplot(aes(x=finishedsquarefeet15)) + geom_boxplot()
+HousingOriginal %>% ggplot(aes(x=landtaxvaluedollarcnt)) + geom_boxplot()
+HousingOriginal %>% ggplot(aes(x=garagetotalsqft)) + geom_boxplot()
+```
+YearBuilt is mostly older houses, I was expecting older houses but the median house age is considerably lower than I anticipated. landtaxvaluedollarcnt has a strange distribution I think warrants further investigation we will do later.
+
+Categorical Explanatory Variables:
+```{r, CategoricalExplanatoryVariables}
+HousingOriginal %>% ggplot(aes(x=airconditioningtypeid)) + geom_bar()
+HousingOriginal %>% ggplot(aes(x=regionidcity)) + geom_histogram()
+HousingOriginal %>% ggplot(aes(x=typeconstructiontypeid)) + geom_bar()
+``` 
+It appears the most common air conditioning type is Central, followed by "Yes". No further explanation is give for "Yes". Most of the observations are from one city, and most of the construction types are Custom. 
+
 Next, to get a general sense of what data we are talking about, we will map out the data on a plot. Zillow multiplied all longitudes and latitudes by 1*10e^6 so we accounted for this in the code.
-```{r}
+```{r, MapData}
 states <- map_data("state")
 filter(states, region == "california") %>% ggplot(aes(x = long, y = lat)) +
   geom_path(aes(group = group)) +
   geom_point(data=HousingOriginal,aes(x=longitude/1000000, y=latitude/1000000, color="#E69F00")) +
   ggtitle("All data mapped against California")
 ```
-So now we know for certain that we are deal with southern California homes. Everything from mansions to shacks. Before we begin modelling, there are a couple of preemptive questions I would like to ask:
 
 ### We each should do one of each of these
 + Numeric vs numberic ( using scatterplots) 
@@ -134,15 +149,37 @@ So now we know for certain that we are deal with southern California homes. Ever
 + Categorical vs categorical ( using barchart with facetting or other aesthetic)
 
 ### Craig's Questions:
-Variables: yearBuilt, bathroom ct, architectureStyleTypeId, regionIDCity, fireplacecnt
+Variables: yearBuilt, bathroomcnt, airconditioningtypeid, regionIDCity, fireplacecnt
+<!-- numeric vs numeric -->
 1. What is the relationship between bathroomcnt and fireplacecnt 
-2. What is the relationship between yearbuilt and architectureStyleTypeId
-3. What is the relationship between regionIDCity and architectureStyleTypeId
+<!-- numeric vs categorical -->
+2. What is the relationship between yearbuilt and airconditioningtypeid
+<!-- categorical vs categorical -->
+3. What is the relationship between regionIDCity and airconditioningtypeid
 
-In modern architecture, fire places are not very common place, but do exist especially in nicer homes. In older architecture, they are more common for both stylisitic and actual warmth purposes.
-```{}
-HousingOriginal %>% ggplot(aes(x=bathrromcnt, y=fireplacecnt))
+In modern architecture, fire places are not very common place, but do exist especially in nicer homes. In older architecture, they are more common for both stylistic and actual warmth purposes.
+```{r, BathFire}
+CraigsHousing = HousingOriginal
+#fireplacecnt had to have nas replaced with 0s for the plot
+CraigsHousing$fireplacecnt = CraigsHousing$fireplacecnt %>% replace_na(0)
+CraigsHousing[CraigsHousing$bathroomcnt > 10, ] %>% count()
+CraigsHousing[CraigsHousing$bathroomcnt < CraigsHousing$fireplacecnt, ] %>% count()
+CraigsHousing %>% ggplot(aes(x=bathroomcnt, y=fireplacecnt)) + geom_point()
+cor(CraigsHousing$bathroomcnt, CraigsHousing$fireplacecnt)
 ```
+With an r value of 0.087 we know these values are independent. We can also see from the data that fireplaces are pretty scattered across all bathrooms quantities. Also, there are 237 homes with more than 10 bathrooms, and 672 homes that have more fireplaces than bathrooms both of which I found interesting.
 
+Airconditioning is a rather recent invention compared to some of these houses. With that in mind, I am quite curious what airconditioning systems are most common for different eras
+```{r}
+CraigsHousing %>% ggplot(aes(y=yearbuilt)) + geom_boxplot() + facet_grid(~airconditioningtypeid)
+filter(CraigsHousing, airconditioningtypeid > 0) %>%
+  ggplot(aes(y=taxvaluedollarcnt,
+             x=yearbuilt,
+             color=as.factor(airconditioningtypeid))) +
+  geom_point()
+```
+1 Central, 3 Evaporative Cooler, 5 None, 9 Refrigeration, 11 Wall Unit, 12 Window Unit, 13 Yes
+I have no idea what an evaporative cooler is but, they apparently existed very briefly. A lot more houses don't have air conditioning than I thought would. I also didn't expect central air in so many old houses. The comparison 
 
 ### Ngoc's Questions:
+Ngoc's variables: basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft
