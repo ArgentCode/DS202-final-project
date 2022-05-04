@@ -25,6 +25,7 @@ write.csv(samllSampledData,"C:\\Users\\black\\Desktop\\School\\DS 202\\DS202-fin
 ```{r, Instantiation}
 library(tidyverse)
 library(lubridate)
+library(ggmosaic)
 library(maps)
 HousingOriginal <- read.csv("properties_small_2017.csv")
 ```
@@ -37,6 +38,7 @@ Project is on [Github](https://github.com/ArgentCode/DS202-final-project).
 Our plan is to use the taxvaluedollarcnt as the actual value of the house, and we plan on doing a variety of visualizations and assessments on both the explanatory variables and the response variable. We will be coming at this with a statistics approach as if we were preparing to make a model. We also hope to do a map to visualize the data and see what we can do for that style of visual with coloring and making interesting visuals.
 
 We noticed the data is decently well cleaned. We suspect dealing with the large number of NA's will be a major challenge, but most of the cleaning has occured in the form of reducing. The original data was an almost 700 mb csv file we had to shrink down (Code above on methodology).
+
 II. Clean & Visualize data
 
   1. Clean
@@ -68,6 +70,9 @@ III. Investigate relationship
 + Numeric vs numberic ( using scatterplots) 
 + Numeric vs categorical ( using side by side boxplots or facetted plot)
 + Categorical vs categorical ( using barchart with facetting or other aesthetic)
+
+-6 Candidate plots: scatter plot(done), line plot, time series plot, boxplot(done),
+barplot(done), histogram(done), mosaic plot, map plot(done).
 
 - Repeat and follow the questions on index 3.
 - Include the next variable to find the relationship
@@ -124,6 +129,7 @@ HousingOriginal %>% ggplot(aes(x=finishedsquarefeet15)) + geom_boxplot()
 HousingOriginal %>% ggplot(aes(x=landtaxvaluedollarcnt)) + geom_boxplot()
 HousingOriginal %>% ggplot(aes(x=garagetotalsqft)) + geom_boxplot()
 ```
+
 YearBuilt is mostly older houses, I was expecting older houses but the median house age is considerably lower than I anticipated. landtaxvaluedollarcnt has a strange distribution I think warrants further investigation we will do later.
 
 Categorical Explanatory Variables:
@@ -132,6 +138,7 @@ HousingOriginal %>% ggplot(aes(x=airconditioningtypeid)) + geom_bar()
 HousingOriginal %>% ggplot(aes(x=regionidcity)) + geom_histogram()
 HousingOriginal %>% ggplot(aes(x=typeconstructiontypeid)) + geom_bar()
 ``` 
+
 It appears the most common air conditioning type is Central, followed by "Yes". No further explanation is give for "Yes". Most of the observations are from one city, and most of the construction types are Custom. 
 
 Next, to get a general sense of what data we are talking about, we will map out the data on a plot. Zillow multiplied all longitudes and latitudes by 1*10e^6 so we accounted for this in the code.
@@ -167,10 +174,11 @@ CraigsHousing[CraigsHousing$bathroomcnt < CraigsHousing$fireplacecnt, ] %>% coun
 CraigsHousing %>% ggplot(aes(x=bathroomcnt, y=fireplacecnt)) + geom_point()
 cor(CraigsHousing$bathroomcnt, CraigsHousing$fireplacecnt)
 ```
+
 With an r value of 0.087 we know these values are independent. We can also see from the data that fireplaces are pretty scattered across all bathrooms quantities. Also, there are 237 homes with more than 10 bathrooms, and 672 homes that have more fireplaces than bathrooms both of which I found interesting.
 
-Airconditioning is a rather recent invention compared to some of these houses. With that in mind, I am quite curious what airconditioning systems are most common for different eras
-```{r}
+Air conditioning is a rather recent invention compared to some of these houses. With that in mind, I am quite curious what air conditioning systems are most common for different eras
+```{r yearlyAirConditioning}
 CraigsHousing %>% ggplot(aes(y=yearbuilt)) + geom_boxplot() + facet_grid(~airconditioningtypeid)
 filter(CraigsHousing, airconditioningtypeid > 0) %>%
   ggplot(aes(y=taxvaluedollarcnt,
@@ -180,6 +188,7 @@ filter(CraigsHousing, airconditioningtypeid > 0) %>%
 ```
 1 Central, 3 Evaporative Cooler, 5 None, 9 Refrigeration, 11 Wall Unit, 12 Window Unit, 13 Yes
 I have no idea what an evaporative cooler is but, they apparently existed very briefly. A lot more houses don't have air conditioning than I thought would. I also didn't expect central air in so many old houses. The comparison 
+
 
 ### Ngoc's Questions:
 Ngoc's variables: basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft
