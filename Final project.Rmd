@@ -24,9 +24,12 @@ write.csv(samllSampledData,"C:\\Users\\black\\Desktop\\School\\DS 202\\DS202-fin
 ## Instantiation
 ```{r, Instantiation}
 library(tidyverse)
-library(lubridate)
 library(ggmosaic)
 library(maps)
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(ggpubr)
 HousingOriginal <- read.csv("properties_small_2017.csv")
 ```
 ## Proposal (Homework 11)
@@ -38,47 +41,6 @@ Project is on [Github](https://github.com/ArgentCode/DS202-final-project).
 Our plan is to use the taxvaluedollarcnt as the actual value of the house, and we plan on doing a variety of visualizations and assessments on both the explanatory variables and the response variable. We will be coming at this with a statistics approach as if we were preparing to make a model. We also hope to do a map to visualize the data and see what we can do for that style of visual with coloring and making interesting visuals.
 
 We noticed the data is decently well cleaned. We suspect dealing with the large number of NA's will be a major challenge, but most of the cleaning has occured in the form of reducing. The original data was an almost 700 mb csv file we had to shrink down (Code above on methodology).
-
-II. Clean & Visualize data
-
-  1. Clean
-  
-  - Are variables in the right format? 
-  - factors are factors, date information is in date format?
-  - Are levels in the correct order? 
-  - Are level names textual information rather than cryptic numbers?
-  - Do variable names to be changed for convenience?
-
-  2. Find (visual) summaries of each data variable using diferent plots to see different aspect ( to see weather expectations matchs)
-  
-  3. Follow up
-  
-  - compare with our expectations.
-  - Find out where the expectations match and where do not. Then find "why" 
-    
-  4. Visual summary 
-  
-  - One visual summary chart for each relevant variable
-  - Document expectations ( 2 sentences )
-  - Emphasize main finding
-  
-
-III. Investigate relationship
-
-- Two-way relationship
-
-+ Numeric vs numberic ( using scatterplots) 
-+ Numeric vs categorical ( using side by side boxplots or facetted plot)
-+ Categorical vs categorical ( using barchart with facetting or other aesthetic)
-
--6 Candidate plots: scatter plot(done), line plot, time series plot, boxplot(done),
-barplot(done), histogram(done), mosaic plot, map plot(done).
-
-- Repeat and follow the questions on index 3.
-- Include the next variable to find the relationship
-
-IV. Digging deeper with some fancy stuff ( if have time)
-- Training some models
 
 ## Actual Report
 
@@ -104,9 +66,7 @@ First, how many NA's do we have.
 ```{r}
 colSums(is.na(HousingOriginal))
 ```
-The variables airconditioningtypeid, fireplacecnt, basementsqft, finishedsquarefeet15, typeconstructiontypeid, garagetotalsqft all have a large majority of null values. fireplacecnt uses null to indicate that there is no fireplace. However, airconditioningtypeid has a category for no air conditioner so there is no obvious explanation for the lack of values. We still have ~300,000 observations so analysis should be able to continue. 
-
-### Justin-todo Explain your NA's, and do any base level analysis you need
+The variables airconditioningtypeid, fireplacecnt, basementsqft, finishedsquarefeet15, typeconstructiontypeid, garagetotalsqft all have a large majority of null values. fireplacecnt uses null to indicate that there is no fireplace. basementsqft uses null to indicate that some houses do not have basement (most of the houses in CA do not) and some basements haven't finished. However, garagetotalsqft and airconditioningtypeid have a category for no air conditioner so there is no obvious explanation for the lack of values. One possibility is those houses hasn't finished the garage and AC yet.  We still have ~300,000 observations so analysis should be able to continue.
 
 Response Variable:
 The response variable is our first investigation, we will be attempting to see if it is bell shaped and has a normal distribution. We see the data is quite spread out, with a standard deviation of $614,453 and a mean of $441,428. There are 103,994 observations of houses less than $100,000 and 443 observations of houses more than $10,000,000. So our data is incredibly spread out. 
@@ -162,7 +122,6 @@ Variables: yearBuilt, bathroomcnt, airconditioningtypeid, regionIDCity, fireplac
 <!-- numeric vs categorical -->
 2. What is the relationship between yearbuilt and airconditioningtypeid
 <!-- categorical vs categorical -->
-3. What is the relationship between regionIDCity and airconditioningtypeid
 
 In modern architecture, fire places are not very common place, but do exist especially in nicer homes. In older architecture, they are more common for both stylistic and actual warmth purposes.
 ```{r, BathFire}
@@ -189,6 +148,59 @@ filter(CraigsHousing, airconditioningtypeid > 0) %>%
 1 Central, 3 Evaporative Cooler, 5 None, 9 Refrigeration, 11 Wall Unit, 12 Window Unit, 13 Yes
 I have no idea what an evaporative cooler is but, they apparently existed very briefly. A lot more houses don't have air conditioning than I thought would. I also didn't expect central air in so many old houses. The comparison 
 
-
+We will also explore the relationship between fireplacecnt and yearbuilt. As houses get newer, I believe they have less fireplaces.
+```{r}
+CraigsHousing.byYear = CraigsHousing %>% group_by(yearbuilt) %>%
+  summarize(
+    m.fireplacecnt = mean(fireplacecnt, na.rm=TRUE)
+  )
+CraigsHousing.byYear %>% ggplot(aes(x=yearbuilt, y=m.fireplacecnt)) + geom_line()
+``` 
 ### Ngoc's Questions:
 Ngoc's variables: basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft
+
+### Linear regression
+Now we will attempt a linear regression. In theory we should do variable selection and test p-values and such. Instead I am going to use yearbuilt, bathroomcnt, and regionidcity. bathroomcnt I believe will act as "how big is the house", while yearbuilt determines age. These are the factors I will use to try and explain taxvaluedollarcnt.
+
+First we check the explanatory variables against the response.
+```{r}
+regressionData = HousingOriginal %>% select(taxvaluedollarcnt, yearbuilt, bathroomcnt)
+res <- cor(regressionData)
+round(res, 2)
+
+regressionData %>% ggplot(aes(x=taxvaluedollarcnt, y=yearbuilt)) + geom_point()
+regressionData %>% ggplot(aes(x=taxvaluedollarcnt, y=bathroomcnt)) + geom_point()
+```
+bathroomcnt is moderately visually linear. Yearbuilt looks around moderately as well. 
+
+Next, as practice, we will try a single regression investigating whether using only yearbuilt helps to explain taxvaluedollarcnt.
+```{r}
+single.regression <- lm(taxvaluedollarcnt ~ yearbuilt, data = regressionData)
+
+summary(single.regression)
+```
+Does this model help to explain taxvaluedollarcnt?
+Null hypothesis: b1 = 0
+Alternative hypothesis: b1 != 0
+f statistic: 2.456e+04
+p value: <0.0001
+Conclusion: we have overwhelimg evidence that using yearbuilt helps to explain the value of taxvaluedollarcnt in the sample.
+Equation = -7.342e+06 + 3.962e+03*yearbuilt
+adjusted R^2: 0.02399 This means that using yearbuilt we can explain 2.4% of the variance in taxvaluedollarcnt
+
+With real estate being an interesting and dynamic market a single variable obviously wouldn't do very well. I was expecting it to perform better though. How about more variables?
+```{r}
+multiple.regression <- lm(taxvaluedollarcnt ~ yearbuilt + bathroomcnt, data = regressionData)
+
+summary(multiple.regression)
+```
+Does this model help to explain taxvaluedollarcnt?
+Null hypothesis: b1 = b2 = 0
+Alternative hypothesis: atleast one of b1, b2 != 0
+f statistic: 1.333e+05
+p value: <0.0001
+Conclusion: we have overwhelimg evidence that using yearbuilt and bathroomcnt help to explain the value of taxvaluedollarcnt in the sample.
+Equation = 615,355.83 - 417.42 * yearbuilt + 280,238.92 * bathroomcnt
+adjusted R^2: 0.2106 This means that using yearbuilt and bathroomcnt we can explain 21% of the variance in taxvaluedollarcnt
+
+These results confuse me. $280k seems like a lot per bathoom, and as houses get newer I would think they get more valuable but that does not appear to be the case. Our R^2 is quite low, but raised dramatically from the single variable.
