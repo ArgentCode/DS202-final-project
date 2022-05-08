@@ -66,6 +66,25 @@ First, how many NA's do we have.
 ```{r}
 colSums(is.na(HousingOriginal))
 ```
+>__Slide 2__: 
+
+### Ading expectation for variables:
+Craig's expectations:
+yearBuilt:
+bathroomcnt:
+airconditioningtypeid:
+regionIDCity:
+fireplacecnt:
+
+------------------------------------
+
+Ngoc's expectation:
+basementsqft:
+finishedsquarefeet15:
+landtaxvaluedollarcnt:
+typeconstructiontypeid:
+garagetotalsqft:
+
 The variables airconditioningtypeid, fireplacecnt, basementsqft, finishedsquarefeet15, typeconstructiontypeid, garagetotalsqft all have a large majority of null values. fireplacecnt uses null to indicate that there is no fireplace. basementsqft uses null to indicate that some houses do not have basement (most of the houses in CA do not) and some basements haven't finished. However, garagetotalsqft and airconditioningtypeid have a category for no air conditioner so there is no obvious explanation for the lack of values. One possibility is those houses hasn't finished the garage and AC yet.  We still have ~300,000 observations so analysis should be able to continue.
 
 Response Variable:
@@ -78,40 +97,51 @@ sd(HousingOriginal$taxvaluedollarcnt)
 HousingOriginal[HousingOriginal$taxvaluedollarcnt > 10000000, ] %>% count()
 HousingOriginal[HousingOriginal$taxvaluedollarcnt < 100000, ] %>% count()
 ```
+>__Slide 4__:
+
+#Visual summary 
+
 Quantitative Explanatory Variables:
 ```{r, QuantitativeExplanatoryVariables}
 HousingOriginal %>% ggplot(aes(x=yearbuilt)) + geom_boxplot()
 HousingOriginal %>% 
 ggplot(aes(x=yearbuilt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
-# Most houses were built around 1950-1955, not so many houses neither before 1920 nor after 2000 were analyzed 
+# 2 sentences summary: Most houses were built around 1950-1955, not so many houses neither before 1920 nor after 2000 were analyzed 
 HousingOriginal %>% ggplot(aes(x=bathroomcnt)) + geom_histogram()
 
 HousingOriginal %>% 
 ggplot(aes(x=bathroomcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
 
 HousingOriginal %>% ggplot(aes(x=fireplacecnt)) + geom_histogram()
 
 HousingOriginal %>% 
 ggplot(aes(x=fireplacecnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
 
 HousingOriginal %>% ggplot(aes(x=basementsqft)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=basementsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
 
 HousingOriginal %>% ggplot(aes(x=finishedsquarefeet15)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=finishedsquarefeet15))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
 
 HousingOriginal %>% ggplot(aes(x=landtaxvaluedollarcnt)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=landtaxvaluedollarcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
 
 HousingOriginal %>% ggplot(aes(x=garagetotalsqft)) + geom_boxplot()
+
 HousingOriginal %>% 
 ggplot(aes(x=garagetotalsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
 ```
  
 
@@ -121,7 +151,17 @@ Categorical Explanatory Variables:
 ```{r, CategoricalExplanatoryVariables}
 HousingOriginal %>% ggplot(aes(x=airconditioningtypeid)) + geom_bar()
 HousingOriginal %>% ggplot(aes(x=regionidcity)) + geom_histogram()
+
+HousingOriginal %>% 
+ggplot(aes(x=airconditioningtypeid))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# 2 sentences summary:
+
 HousingOriginal %>% ggplot(aes(x=typeconstructiontypeid)) + geom_bar()
+
+HousingOriginal %>% 
+ggplot(aes(x=typeconstructiontypeid))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+
+# 2 sentences summary:
 ``` 
 
 It appears the most common air conditioning type is Central, followed by "Yes". No further explanation is give for "Yes". Most of the observations are from one city, and most of the construction types are Custom. 
@@ -134,6 +174,9 @@ filter(states, region == "california") %>% ggplot(aes(x = long, y = lat)) +
   geom_point(data=HousingOriginal,aes(x=longitude/1000000, y=latitude/1000000, color="#E69F00")) +
   ggtitle("All data mapped against California")
 ```
+
+>__Slide 6__: 
+Expanding complexity
 
 ### We each should do one of each of these
 + Numeric vs numberic ( using scatterplots) 
@@ -181,8 +224,26 @@ CraigsHousing.byYear = CraigsHousing %>% group_by(yearbuilt) %>%
   )
 CraigsHousing.byYear %>% ggplot(aes(x=yearbuilt, y=m.fireplacecnt)) + geom_line()
 ``` 
+
 ### Ngoc's Questions:
+
 Ngoc's variables: basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft
+<!-- numeric vs numeric -->  
+1. What is the relationship between basementsqft, and garagetotalsqft 
+<!-- numeric vs categorical -->
+2. What is the relationship between finishedsquarefeet15 and airconditioningtypeid
+<!-- categorical vs categorical -->
+3. What is the relationship between  airconditioningtypeid and typeconstructiontypeid
+
+4. My expectation for relationship?
+
+5. is or how-far the expectation met
+
+6. Choose and add another into the relationship.
+
+7. What does this finding mean?
+
+
 
 ### Linear regression
 Now we will attempt a linear regression. In theory we should do variable selection and test p-values and such. Instead I am going to use yearbuilt, bathroomcnt, and regionidcity. bathroomcnt I believe will act as "how big is the house", while yearbuilt determines age. These are the factors I will use to try and explain taxvaluedollarcnt.
