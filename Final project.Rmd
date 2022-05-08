@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Data Selection
 This is how we selected our data and ensured it would be small enough to go on github.
 ```{r, DataSelection, eval = FALSE, echo = FALSE}
-HousingOriginal <- read.csv("properties_2017.csv")
+HousingOriginal <- read.csv("properties_small_2017.csv")
 smallData = HousingOriginal %>% select(yearbuilt, bathroomcnt, airconditioningtypeid, regionidcity, fireplacecnt,
                                        basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft,
                                        latitude, longitude, taxvaluedollarcnt)
@@ -78,17 +78,42 @@ sd(HousingOriginal$taxvaluedollarcnt)
 HousingOriginal[HousingOriginal$taxvaluedollarcnt > 10000000, ] %>% count()
 HousingOriginal[HousingOriginal$taxvaluedollarcnt < 100000, ] %>% count()
 ```
-
 Quantitative Explanatory Variables:
 ```{r, QuantitativeExplanatoryVariables}
 HousingOriginal %>% ggplot(aes(x=yearbuilt)) + geom_boxplot()
+HousingOriginal %>% 
+ggplot(aes(x=yearbuilt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+# Most houses were built around 1950-1955, not so many houses neither before 1920 nor after 2000 were analyzed 
 HousingOriginal %>% ggplot(aes(x=bathroomcnt)) + geom_histogram()
+
+HousingOriginal %>% 
+ggplot(aes(x=bathroomcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+
 HousingOriginal %>% ggplot(aes(x=fireplacecnt)) + geom_histogram()
+
+HousingOriginal %>% 
+ggplot(aes(x=fireplacecnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+
 HousingOriginal %>% ggplot(aes(x=basementsqft)) + geom_boxplot()
+
+HousingOriginal %>% 
+ggplot(aes(x=basementsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+
 HousingOriginal %>% ggplot(aes(x=finishedsquarefeet15)) + geom_boxplot()
+
+HousingOriginal %>% 
+ggplot(aes(x=finishedsquarefeet15))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+
 HousingOriginal %>% ggplot(aes(x=landtaxvaluedollarcnt)) + geom_boxplot()
+
+HousingOriginal %>% 
+ggplot(aes(x=landtaxvaluedollarcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+
 HousingOriginal %>% ggplot(aes(x=garagetotalsqft)) + geom_boxplot()
+HousingOriginal %>% 
+ggplot(aes(x=garagetotalsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
 ```
+ 
 
 YearBuilt is mostly older houses, I was expecting older houses but the median house age is considerably lower than I anticipated. landtaxvaluedollarcnt has a strange distribution I think warrants further investigation we will do later.
 
