@@ -114,79 +114,94 @@ HousingOriginal %>%
   ggplot(aes(x=yearbuilt))+
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=yearbuilt)) + geom_point()
 fivenum(HousingOriginal$yearbuilt)
 ```
 
-2 sentences summary: Our median was 1963 with 75% of the data being between 1950 and 1981. Our data is skewwed left with a logical limit of 2017 when the Kaggle competition was taking place.
+2 sentences summary: Our median was 1963 with 75% of the data being between 1950 and 1981. Our data is skewwed left with a logical limit of 2017 when the Kaggle competition was taking place. There is a weak correlation between yearbuilt and taxvaluedollarcnt.
 
 ```{r}
 HousingOriginal %>% ggplot(aes(x=bathroomcnt)) + geom_histogram()
 
 HousingOriginal %>% 
-ggplot(aes(x=bathroomcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+  ggplot(aes(x=bathroomcnt))+
+  geom_line(stat="density", color="Red", size=1)+
+  theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=bathroomcnt)) + geom_point()
+fivenum(HousingOriginal$bathroomcnt)
+cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$bathroomcnt)
 ```
 
-2 sentences summary: Data is unimodal and bell shaped with a right skew. There is a logical barrier at 0 as you cannot have negative bathrooms. Mean is right around 3 which is where its expected to be.
+2 sentences summary: Data is unimodal and bell shaped with a right skew. There is a logical barrier at 0 as you cannot have negative bathrooms. Mean is right around 3 which is where its expected to be. There is a moderate-weak amount of correlation between bathroomcnt and taxvaluedollarcnt
 
 ```{r}
 HousingOriginal %>% ggplot(aes(x=fireplacecnt)) + geom_histogram()
 
 HousingOriginal %>% 
-ggplot(aes(x=fireplacecnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+  ggplot(aes(x=fireplacecnt))+
+  geom_line(stat="density", color="Red", size=1)+
+  theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=fireplacecnt)) + geom_point()
+fivenum(HousingOriginal$fireplacecnt)
 ```
 
-2 sentences summary: As predicted, most of the observations have no fireplace. Results look logarithmic.
+2 sentences summary: As predicted, most of the observations have no fireplace. Results look logarithmic and very sporadic, there does not appear to be a correlation between fireplacecnt and taxvaluedollarcnt.
 
 ```{r}
 
 HousingOriginal %>% ggplot(aes(x=basementsqft)) + geom_boxplot()
 
 HousingOriginal %>% 
-ggplot(aes(x=basementsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+  ggplot(aes(x=basementsqft))+
+  geom_line(stat="density", color="Red", size=1)+
+  theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=basementsqft)) + geom_point()
 fivenum(HousingOriginal$basementsqft)
-#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
-# To see if they have linear relationship
+cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$basementsqft)
 ```
 
-2 sentences summary: The median square feet of a house's basement is 533 with 75% of the basement's area between 266 to 823.5 square feet. The graph skewed right. 
+2 sentences summary: The median square feet of a house's basement is 533 with 75% of the basement's area between 266 to 823.5 square feet. The graph skewed right. There does not appear to be a correlation between fireplacecnt and taxvaluedollarcnt.
 
 ```{r}
 
 HousingOriginal %>% ggplot(aes(x=finishedsquarefeet15)) + geom_boxplot()
 
 HousingOriginal %>% 
-ggplot(aes(x=finishedsquarefeet15))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+  ggplot(aes(x=finishedsquarefeet15))+
+  geom_line(stat="density", color="Red", size=1)+
+  theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=finishedsquarefeet15)) + geom_point()
 fivenum(HousingOriginal$finishedsquarefeet15)
-#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
-# To see if they have linear relationship
-
 ```
 
-2 sentences summary: 
+2 sentences summary: The median of the data is at 2128 and 75% of the data is between 1681 and 2847. The data is highly concentrated on the left with outliers on the right. There are about 3-5 outliers of significance, and there does not appear to be any correlation between finishedsquarefeet15 and taxvaluedollarcnt.
 
 ```{r}
 HousingOriginal %>% ggplot(aes(x=landtaxvaluedollarcnt)) + geom_boxplot()
 
 HousingOriginal %>% 
-ggplot(aes(x=landtaxvaluedollarcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+  ggplot(aes(x=landtaxvaluedollarcnt))+
+  geom_line(stat="density", color="Red", size=1)+
+  theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=landtaxvaluedollarcnt)) + geom_point()
 fivenum(HousingOriginal$landtaxvaluedollarcnt)
-#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
-# To see if they have linear relationship
 ```
 
-2 sentences summary:
+2 sentences summary: The median is 176659 with 75% of the data being between 80267 and 325091. The data is quite spread out with many outliers. There is a clear, almost dependent relationship between landtaxvaluedollarcnt and taxvaluedollarcnt
 
 ```{r}
 HousingOriginal %>% ggplot(aes(x=garagetotalsqft)) + geom_boxplot()
 
 HousingOriginal %>% 
-ggplot(aes(x=garagetotalsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+  ggplot(aes(x=garagetotalsqft))+
+  geom_line(stat="density", color="Red", size=1)+
+  theme_bw()
+HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=garagetotalsqft)) + geom_point()
 fivenum(HousingOriginal$garagetotalsqft)
-#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
-# To see if they have linear relationship
+cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$garagetotalsqft)
 ```
 
-2 sentences summary:
+2 sentences summary: Median is 441 with 75% of the data being between 350 and 496. The data is very spread out, and there does not appear to be a correlation between garagetotalsqft and taxvaluedollarcnt.
  
 
 ### Categorical Explanatory Variables:
@@ -212,8 +227,6 @@ HousingOriginal %>% ggplot(aes(x=typeconstructiontypeid)) + geom_bar()
 HousingOriginal %>% 
 ggplot(aes(x=typeconstructiontypeid))+geom_line(stat="density", color="Red", size=1)+theme_bw()
 fivenum(HousingOriginal$typeconstructiontypeid)
-#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
-# To see if they have linear relationship
 
 ``` 
 
