@@ -74,7 +74,7 @@ fireplacecnt: I do not believe fireplaces are very common these days, so these w
 ------------------------------------
 
 Ngoc's expectation:
-basementsqft: I think basementsqft won't help explain taxvaluedollarcnt because a lot of houses do not have basements or has not finished it.
+basementsqft: I think basementsqft won't help explain taxvaluedollarcnt because a lot of houses do not have basements or has not finished it. I think larger houses has larger basement.
 finishedsquarefeet15: Help explain taxvaluedollarcnt because if the house has large unfinished areas, the value is lesser than the one has larger 
 landtaxvaluedollarcnt: the land tax usually base on the house's price. For example in Iowa, land tax is 1.53%. So the higher tax land, the higher 
 typeconstructiontypeid:I don't think typeconstructiontypeid would well explain taxvaluedollarcnt because the type is not important but areas ( in square feet is). I would like to see if there is any time of construction has the price higher
@@ -143,9 +143,12 @@ HousingOriginal %>% ggplot(aes(x=basementsqft)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=basementsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+fivenum(HousingOriginal$basementsqft)
+#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
+# To see if they have linear relationship
 ```
 
-2 sentences summary: 
+2 sentences summary: The median square feet of a house's basement is 533 with 75% of the basement's area between 266 to 823.5 square feet. The graph skewed right. 
 
 ```{r}
 
@@ -153,6 +156,10 @@ HousingOriginal %>% ggplot(aes(x=finishedsquarefeet15)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=finishedsquarefeet15))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+fivenum(HousingOriginal$finishedsquarefeet15)
+#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
+# To see if they have linear relationship
+
 ```
 
 2 sentences summary: 
@@ -162,6 +169,9 @@ HousingOriginal %>% ggplot(aes(x=landtaxvaluedollarcnt)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=landtaxvaluedollarcnt))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+fivenum(HousingOriginal$landtaxvaluedollarcnt)
+#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
+# To see if they have linear relationship
 ```
 
 2 sentences summary:
@@ -171,6 +181,9 @@ HousingOriginal %>% ggplot(aes(x=garagetotalsqft)) + geom_boxplot()
 
 HousingOriginal %>% 
 ggplot(aes(x=garagetotalsqft))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+fivenum(HousingOriginal$garagetotalsqft)
+#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
+# To see if they have linear relationship
 ```
 
 2 sentences summary:
@@ -198,6 +211,10 @@ HousingOriginal %>% ggplot(aes(x=typeconstructiontypeid)) + geom_bar()
 
 HousingOriginal %>% 
 ggplot(aes(x=typeconstructiontypeid))+geom_line(stat="density", color="Red", size=1)+theme_bw()
+fivenum(HousingOriginal$typeconstructiontypeid)
+#Show relationships between basementsqft vs taxvaluedollarcnt to see if the expectation match
+# To see if they have linear relationship
+
 ``` 
 
 2 sentences summary:
@@ -259,26 +276,6 @@ CraigsHousing.byYear %>% ggplot(aes(x=yearbuilt, y=m.fireplacecnt)) + geom_line(
 
 This data in a way confirms my idea that newer houses have less fireplaces, but they seem to come back in trends, such as around 200, and 2015 or so. This graph did definitely not look like I thought it would. 
 
-### Ngoc's Questions:
-
-Ngoc's variables: basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft
-<!-- numeric vs numeric -->  
-1. What is the relationship between basementsqft, and garagetotalsqft 
-<!-- numeric vs categorical -->
-2. What is the relationship between finishedsquarefeet15 and airconditioningtypeid
-<!-- categorical vs categorical -->
-3. What is the relationship between  airconditioningtypeid and typeconstructiontypeid
-
-4. My expectation for relationship?
-
-5. is or how-far the expectation met
-
-6. Choose and add another into the relationship.
-
-7. What does this finding mean?
-
-
-
 ### Linear regression
 Now we will attempt a linear regression. In theory we should do variable selection and test p-values and such. Instead I am going to use yearbuilt, bathroomcnt, and regionidcity. bathroomcnt I believe will act as "how big is the house", while yearbuilt determines age. These are the factors I will use to try and explain taxvaluedollarcnt.
 
@@ -327,3 +324,21 @@ Equation = 615,355.83 - 417.42 * yearbuilt + 280,238.92 * bathroomcnt
 adjusted R^2: 0.2106 This means that using yearbuilt and bathroomcnt we can explain 21% of the variance in taxvaluedollarcnt
 
 These results are suspicious. $280k seems like a lot per bathroom, and as houses get newer I would think they get more valuable but that does not appear to be the case. Our R^2 is quite low, but raised dramatically from the single variable.
+
+### Ngoc's Questions:
+
+Ngoc's variables: basementsqft, finishedsquarefeet15, landtaxvaluedollarcnt, typeconstructiontypeid, garagetotalsqft
+<!-- numeric vs numeric -->  
+1. What is the relationship between basementsqft, and garagetotalsqft 
+<!-- numeric vs categorical -->
+2. What is the relationship between finishedsquarefeet15 and airconditioningtypeid
+<!-- categorical vs categorical -->
+3. What is the relationship between  airconditioningtypeid and typeconstructiontypeid
+
+4. My expectation for relationship?
+
+5. is or how-far the expectation met
+
+6. Choose and add another into the relationship.
+
+7. What does this finding mean?
