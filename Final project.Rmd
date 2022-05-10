@@ -74,11 +74,11 @@ fireplacecnt: I do not believe fireplaces are very common these days, so these w
 ------------------------------------
 
 Ngoc's expectation:
-basementsqft:
-finishedsquarefeet15:
-landtaxvaluedollarcnt:
-typeconstructiontypeid:
-garagetotalsqft:
+basementsqft: I think basementsqft won't help explain taxvaluedollarcnt because a lot of houses do not have basements or has not finished it.
+finishedsquarefeet15: Help explain taxvaluedollarcnt because if the house has large unfinished areas, the value is lesser than the one has larger 
+landtaxvaluedollarcnt: the land tax usually base on the house's price. For example in Iowa, land tax is 1.53%. So the higher tax land, the higher 
+typeconstructiontypeid:I don't think typeconstructiontypeid would well explain taxvaluedollarcnt because the type is not important but areas ( in square feet is). I would like to see if there is any time of construction has the price higher
+garagetotalsqft:Bigger house has bigger garage so I think it make sense if this variable is well explain taxvaluedollarcnt. 
 
 
 ## Clean and visualize
