@@ -18,7 +18,7 @@ smallData = HousingOriginal %>% select(yearbuilt, bathroomcnt, airconditioningty
                                        latitude, longitude, taxvaluedollarcnt)
 smallData = smallData %>% filter(bathroomcnt > 0, taxvaluedollarcnt > 999)
 samllSampledData = sample_n(smallData, 1000000)
-write.csv(samllSampledData,"C:\\Users\\black\\Desktop\\School\\DS 202\\DS202-final-project\\properties_small_2017.csv", row.names = FALSE)
+write.csv(samllSampledData,"properties_small_2017.csv", row.names = FALSE)
 ```
 
 ## Instantiation
@@ -44,42 +44,64 @@ We noticed the data is decently well cleaned. We suspect dealing with the large 
 
 ## Actual Report
 
-Real estate and Housing prices are always in great flux. We have decided to use the 2017 Zillow competition data to try and predict prices for real estate using a variety of factors. The response variable we are using will be taxvaluedollarcnt. A continuous quantitative variable. 
+Real estate and Housing prices are always in great flux. We have decided to use the 2017 Zillow competition data to try and predict prices for real estate using a variety of factors. The response variable we are using will be taxvaluedollarcnt. A continuous quantitative variable.
+
 The response variables are:
+
 Quantitative: 
+
 yearbuilt, discrete
+
 bathroomcnt, discrete with halves
+
 fireplacecnt, discrete
+
 basementsqft, continuous
+
 finishedsquarefeet15, continuous
+
 landtaxvaluedollarcnt, continuous
+
 garagetotalsqft, continuous
 
 Categorical:
-airconditioningtypeid, nominal
-regionidcity, nominal
-typeconstructiontypeid, nominal
 
+airconditioningtypeid, nominal
+
+regionidcity, nominal
+
+typeconstructiontypeid, nominal
 
 >__Slide 2__: 
 
 ### Ading expectation for variables:
+
 Craig's expectations:
+
 yearBuilt: Help explain taxvaluedollarcnt because newer houses will be nicer and have more modern ammenities like outlets
+
 bathroomcnt:  Help explain taxvaluedollarcnt because more bathrooms usually is indicative of a bigger house
+
 airconditioningtypeid: I have no idea what the distribution of airconditioning will be. But I am curious to find out.
+
 regionIDCity: Help explain taxvaluedollarcnt because location is often one of the most important factors
-fireplacecnt: I do not believe fireplaces are very common these days, so these will be more prevelant in older homes, making them less valuable.
+
+fireplacecnt: I do not believe fireplaces are very common these days, so these will be more prevelant in older homes, making them less 
+valuable.
 
 ------------------------------------
 
 Ngoc's expectation:
-basementsqft: I think basementsqft won't help explain taxvaluedollarcnt because a lot of houses do not have basements or has not finished it. I think larger houses has larger basement.
-finishedsquarefeet15: Help explain taxvaluedollarcnt because if the house has large unfinished areas, the value is lesser than the one has larger 
-landtaxvaluedollarcnt: the land tax usually base on the house's price. For example in Iowa, land tax is 1.53%. So the higher tax land, the higher 
-typeconstructiontypeid:I don't think typeconstructiontypeid would well explain taxvaluedollarcnt because the type is not important but areas ( in square feet is). I would like to see if there is any time of construction has the price higher
-garagetotalsqft:Bigger house has bigger garage so I think it make sense if this variable is well explain taxvaluedollarcnt. 
 
+basementsqft: I think basementsqft won't help explain taxvaluedollarcnt because a lot of houses do not have basements or has not finished it. I think larger houses has larger basement.
+
+finishedsquarefeet15: Help explain taxvaluedollarcnt because if the house has large unfinished areas, the value is lesser than the one has larger 
+
+landtaxvaluedollarcnt: the land tax usually base on the house's price. For example in Iowa, land tax is 1.53%. So the higher tax land, the higher 
+
+typeconstructiontypeid:I don't think typeconstructiontypeid would well explain taxvaluedollarcnt because the type is not important but areas ( in square feet is). I would like to see if there is any time of construction has the price higher
+
+garagetotalsqft:Bigger house has bigger garage so I think it make sense if this variable is well explain taxvaluedollarcnt. 
 
 ## Clean and visualize
 First, how much data is invalid, and what is the structure of the data
@@ -94,6 +116,7 @@ The variables airconditioningtypeid, fireplacecnt, basementsqft, finishedsquaref
 All data is in numeric or integer format which is consistent with the Kaggle competition
 
 Response Variable:
+
 The response variable is our first investigation, we will be attempting to see if it is bell shaped and has a normal distribution. We see the data is quite spread out, with a standard deviation of $614,453 and a mean of $441,428. There are 103,994 observations of houses less than $100,000 and 443 observations of houses more than $10,000,000. So our data is incredibly spread out. 
 ```{r, ResponseVariable}
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt)) + geom_histogram()
@@ -115,7 +138,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=yearbuilt)) + geom_point()
-fivenum(HousingOriginal$yearbuilt)
+HousingOriginal$yearbuilt %>% summary()
 ```
 
 2 sentences summary: Our median was 1963 with 75% of the data being between 1950 and 1981. Our data is skewwed left with a logical limit of 2017 when the Kaggle competition was taking place. There is a weak correlation between yearbuilt and taxvaluedollarcnt.
@@ -128,7 +151,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=bathroomcnt)) + geom_point()
-fivenum(HousingOriginal$bathroomcnt)
+HousingOriginal$bathroomcnt %>% summary()
 cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$bathroomcnt)
 ```
 
@@ -142,7 +165,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=fireplacecnt)) + geom_point()
-fivenum(HousingOriginal$fireplacecnt)
+HousingOriginal$fireplacecnt %>% summary()
 ```
 
 2 sentences summary: As predicted, most of the observations have no fireplace. Results look logarithmic and very sporadic, there does not appear to be a correlation between fireplacecnt and taxvaluedollarcnt.
@@ -156,7 +179,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=basementsqft)) + geom_point()
-fivenum(HousingOriginal$basementsqft)
+HousingOriginal$basementsqft %>% summary()
 cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$basementsqft)
 ```
 
@@ -171,7 +194,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=finishedsquarefeet15)) + geom_point()
-fivenum(HousingOriginal$finishedsquarefeet15)
+HousingOriginal$finishedsquarefeet15 %>% summary()
 ```
 
 2 sentences summary: The median of the data is at 2128 and 75% of the data is between 1681 and 2847. The data is highly concentrated on the left with outliers on the right. There are about 3-5 outliers of significance, and there does not appear to be any correlation between finishedsquarefeet15 and taxvaluedollarcnt.
@@ -184,7 +207,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=landtaxvaluedollarcnt)) + geom_point()
-fivenum(HousingOriginal$landtaxvaluedollarcnt)
+HousingOriginal$landtaxvaluedollarcnt %>% summary()
 ```
 
 2 sentences summary: The median is 176659 with 75% of the data being between 80267 and 325091. The data is quite spread out with many outliers. There is a clear, almost dependent relationship between landtaxvaluedollarcnt and taxvaluedollarcnt
@@ -197,7 +220,7 @@ HousingOriginal %>%
   geom_line(stat="density", color="Red", size=1)+
   theme_bw()
 HousingOriginal %>% ggplot(aes(x=taxvaluedollarcnt, y=garagetotalsqft)) + geom_point()
-fivenum(HousingOriginal$garagetotalsqft)
+HousingOriginal$garagetotalsqft %>% summary()
 cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$garagetotalsqft)
 ```
 
@@ -207,10 +230,6 @@ cor(HousingOriginal$taxvaluedollarcnt, HousingOriginal$garagetotalsqft)
 ### Categorical Explanatory Variables:
 ```{r}
 HousingOriginal %>% ggplot(aes(x=airconditioningtypeid)) + geom_bar()
-HousingOriginal %>% 
-  ggplot(aes(x=airconditioningtypeid))+
-  geom_line(stat="density", color="Red", size=1)+
-  theme_bw()
 ```
 
 2 sentences summary: Almost all of the obsercations are of one type. Most of the other types aren't even visible.
@@ -224,13 +243,9 @@ HousingOriginal %>% ggplot(aes(x=regionidcity)) + geom_histogram()
 ```{r}
 HousingOriginal %>% ggplot(aes(x=typeconstructiontypeid)) + geom_bar()
 
-HousingOriginal %>% 
-ggplot(aes(x=typeconstructiontypeid))+geom_line(stat="density", color="Red", size=1)+theme_bw()
-fivenum(HousingOriginal$typeconstructiontypeid)
-
 ``` 
 
-2 sentences summary:
+2 sentences summary: Almost all of the observations are type 6. The rest of the variables are almost invisible.
 
 Next, to get a general sense of what data we are talking about, we will map out the data on a plot. Zillow multiplied all longitudes and latitudes by 1*10e^6 so we accounted for this in the code.
 ```{r, MapData}
@@ -246,11 +261,15 @@ Expanding complexity
 
 ### Craig's Questions:
 Variables: yearBuilt, bathroomcnt, airconditioningtypeid, regionIDCity, fireplacecnt
+
 <!-- numeric vs numeric -->
-1. What is the relationship between bathroomcnt and fireplacecnt 
+1. What is the relationship between bathroomcnt and fireplacecnt
+
 <!-- numeric vs categorical -->
 2. What is the relationship between yearbuilt and airconditioningtypeid
-<!-- categorical vs categorical -->
+
+<!-- numeric vs categorical -->
+3. What is the relationship between firepalcecnt and yearbuilt
 
 In modern architecture, fire places are not very common place, but do exist especially in nicer homes. In older architecture, they are more common for both stylistic and actual warmth purposes. Bathrooms are required for all homes to my knowledge, and having more of them is indicative of either a multi-family home or a nicer home. I would like to compare them and ensure these variables aren't dependent and that they are not just both indicative of similar properties.
 ```{r, BathFire}
@@ -267,7 +286,10 @@ With an r value of 0.087 we know these values are independent. We can also see f
 
 Air conditioning is a rather recent invention compared to some of these houses. With that in mind, I am quite curious what air conditioning systems are most common for different eras
 ```{r yearlyAirConditioning}
-CraigsHousing %>% ggplot(aes(y=yearbuilt)) + geom_boxplot() + facet_grid(~airconditioningtypeid)
+CraigsHousing %>% ggplot(aes(y=yearbuilt)) +
+  geom_boxplot() +
+  facet_grid(~airconditioningtypeid) +
+  ggtitle("Yearbuilt by Airconditioningtypeid")
 filter(CraigsHousing, airconditioningtypeid > 0) %>%
   ggplot(aes(y=taxvaluedollarcnt,
              x=yearbuilt,
@@ -311,7 +333,7 @@ single.regression <- lm(taxvaluedollarcnt ~ yearbuilt, data = regressionData)
 summary(single.regression)
 ```
 
-Does this model help to explain taxvaluedollarcnt?
+Does this model help to explain taxvaluedollarcnt? 
 Null hypothesis: b1 = 0
 Alternative hypothesis: b1 != 0
 f statistic: 2.456e+04
